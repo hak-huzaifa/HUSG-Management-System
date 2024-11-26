@@ -432,7 +432,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>320</x>
       <y>40</y>
       <width>141</width>
       <height>51</height>
@@ -458,10 +458,10 @@
    <widget class="QLineEdit" name="ID_lineEdit">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>120</y>
-      <width>251</width>
-      <height>21</height>
+      <x>220</x>
+      <y>110</y>
+      <width>421</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -488,10 +488,10 @@ QLineEdit:focus {
    <widget class="QLineEdit" name="Password_lineEdit">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>170</y>
-      <width>251</width>
-      <height>21</height>
+      <x>220</x>
+      <y>180</y>
+      <width>421</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -516,7 +516,7 @@ QLineEdit:focus {
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>170</y>
+      <y>190</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -528,8 +528,8 @@ QLineEdit:focus {
    <widget class="QPushButton" name="Login_pushButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>290</y>
+      <x>270</x>
+      <y>340</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -562,8 +562,8 @@ QPushButton#Login_pushButton:hover {
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>220</y>
+      <x>340</x>
+      <y>280</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -575,8 +575,8 @@ QPushButton#Login_pushButton:hover {
    <widget class="QPushButton" name="Reg_pushButton">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>210</y>
+      <x>490</x>
+      <y>270</y>
       <width>91</width>
       <height>41</height>
      </rect>
@@ -609,8 +609,8 @@ QPushButton#Reg_pushButton:hover {
    <widget class="QPushButton" name="Close_pushButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>290</y>
+      <x>490</x>
+      <y>340</y>
       <width>121</width>
       <height>41</height>
      </rect>

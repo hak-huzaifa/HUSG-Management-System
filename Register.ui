@@ -524,7 +524,7 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>HK08437</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -580,7 +580,7 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>helloworld12345</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -636,7 +636,7 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>HK08437@st.habib.edu.pk</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLineEdit" name="confirmPassLineEdit">
@@ -666,7 +666,7 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>helloworld12345</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -722,7 +722,7 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>03112566192</string>
+     <string/>
     </property>
    </widget>
    <widget class="QComboBox" name="deptComboBox">
