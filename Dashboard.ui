@@ -435,8 +435,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>40</y>
+      <x>280</x>
+      <y>60</y>
       <width>251</width>
       <height>41</height>
      </rect>
@@ -455,11 +455,11 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:28pt;&quot;&gt;Dashboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="meetingspush">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>120</y>
+      <x>200</x>
+      <y>150</y>
       <width>141</width>
       <height>61</height>
      </rect>
@@ -489,12 +489,12 @@ QPushButton:hover {
      <string>Meetings</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="Calendarpush">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>120</y>
-      <width>161</width>
+      <x>490</x>
+      <y>270</y>
+      <width>141</width>
       <height>61</height>
      </rect>
     </property>
@@ -523,11 +523,11 @@ QPushButton:hover {
      <string>Calendar</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="workpush">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>250</y>
+      <x>480</x>
+      <y>150</y>
       <width>161</width>
       <height>61</height>
      </rect>
@@ -557,11 +557,11 @@ QPushButton:hover {
      <string>Work Allocation</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="Financepush">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>250</y>
+      <x>200</x>
+      <y>270</y>
       <width>141</width>
       <height>61</height>
      </rect>
@@ -594,8 +594,8 @@ QPushButton:hover {
    <widget class="QPushButton" name="closeButton">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>350</y>
+      <x>640</x>
+      <y>400</y>
       <width>91</width>
       <height>41</height>
      </rect>
