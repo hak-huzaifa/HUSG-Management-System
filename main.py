@@ -6,8 +6,8 @@ import pyodbc
 
 def connect_to_database():
     return pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
-                          "SERVER=HAK-PC\HAKSERVER;"
-                          "DATABASE=PROJECT;"
+                          "SERVER=ALISHBA-ZAIDI;"
+                          "DATABASE=projectsample;"
                           "Trusted_Connection=yes;")
 
 class LoginWindow(QtWidgets.QMainWindow):
@@ -100,6 +100,7 @@ class RegistrationWindow(QtWidgets.QMainWindow):
         uic.loadUi('Register.ui',self)
         self.Reg_pushButton.clicked.connect(self.register_user)
         self.Back_pushButton.clicked.connect(self.go_back_to_login)
+        
     def register_user(self):
         hu_id = self.IDLineEdit.text()
         password = self.passwordLineEdit.text()
@@ -165,90 +166,14 @@ class MeetingsWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('Meetings.ui', self)
-
-        # Connect buttons
+        self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
         self.Add_pushButton.clicked.connect(self.add_meeting)
-        self.deptComboBox.currentIndexChanged.connect(self.filter_meetings)
+    
 
-        # Load all meetings initially
-        self.load_meetings()
-
-    def add_meeting(self):
-        meeting_id = self.meetingIDLineEdit.text().strip()
-        date = self.dateEdit.date().toString("yyyy-MM-dd")
-        time = self.timeEdit.time().toString("HH:mm")
-        invited_to = self.deptComboBox.currentText().strip()
-
-        # Validate input
-        if not meeting_id or not invited_to:
-            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill all fields!")
-            return
-
-        try:
-            conn = connect_to_database()
-            cursor = conn.cursor()
-            
-            # Insert meeting into the database
-            query = """INSERT INTO Meetings (Meeting_ID, Date, Time, Invited_To)
-                       VALUES (?, ?, ?, ?)"""
-            cursor.execute(query, (meeting_id, date, time, invited_to))
-            conn.commit()
-
-            QtWidgets.QMessageBox.information(self, "Success", "Meeting added successfully!")
-            self.load_meetings()  # Refresh the table after adding
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
-        finally:
-            conn.close()
-
-    def load_meetings(self):
-        """Load all meetings into the table."""
-        try:
-            conn = connect_to_database()
-            cursor = conn.cursor()
-
-            # Query to fetch all meetings
-            query = "SELECT Meeting_ID, Time, Date FROM Meetings"
-            cursor.execute(query)
-            meetings = cursor.fetchall()
-
-            self.populate_table(meetings)
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
-        finally:
-            conn.close()
-
-    def filter_meetings(self):
-        """Filter meetings based on selected cabinet."""
-        selected_cabinet = self.deptComboBox.currentText().strip()
-
-        try:
-            conn = connect_to_database()
-            cursor = conn.cursor()
-
-            # Query to fetch meetings for the selected cabinet
-            query = "SELECT Meeting_ID, Time, Date FROM Meetings WHERE Invited_To = ?"
-            cursor.execute(query, (selected_cabinet,))
-            meetings = cursor.fetchall()
-
-            self.populate_table(meetings)
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
-        finally:
-            conn.close()
-
-    def populate_table(self, meetings):
-        """Populate the table with meeting data."""
-        self.meetingsTable.setRowCount(0)  # Clear the table first
-
-        for row_number, meeting in enumerate(meetings):
-            self.meetingsTable.insertRow(row_number)
-            for column_number, data in enumerate(meeting):
-                self.meetingsTable.setItem(row_number, column_number, QTableWidgetItem(str(data)))
-
-        # Resize columns to fit content
-        self.meetingsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
+    def go_back_to_dashboard(self):
+        self.close()
+        self.dashboard = DashboardWindow()
+        self.dashboard.show()
 
 
 class EventsCalendarWindow(QtWidgets.QMainWindow):
@@ -283,9 +208,6 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
         self.close()
         self.dashboard = DashboardWindow()
         self.dashboard.show()
-
-    
-
 
 def main():
     app = QApplication(sys.argv)
