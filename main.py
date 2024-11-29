@@ -25,10 +25,6 @@ class LoginWindow(QtWidgets.QMainWindow):
         if not hu_id or not password:
             QtWidgets.QMessageBox.warning(self,"Input Error","FILL ALL FIELDS!")
             return
-
-        if not hu_id.isdigit():
-            QtWidgets.QMessageBox.warning(self, "Invalid ID", "Please add a valid HU ID (only integers).")
-            return
         
         try:
             conn=connect_to_database()
@@ -172,12 +168,114 @@ class MeetingsWindow(QtWidgets.QMainWindow):
         uic.loadUi('Meetings.ui', self)
         self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
         self.Add_pushButton.clicked.connect(self.add_meeting)
-    
+
+    def add_meeting(self):
+        # Retrieve input data
+        meeting_id = self.meetingIDLineEdit.text().strip()  # Get the meeting ID
+        meeting_date = self.dateEdit.date()  # Get QDate object from dateEdit
+        meeting_time = self.timeEdit.time()  # Get QTime object from timeEdit
+        department = self.deptComboBox.currentText().strip()  # Clean the dropdown value
+
+        # Input validation
+        if not all([meeting_id, meeting_date, meeting_time, department]):
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
+            return
+
+        # Ensure the meeting ID is a valid integer (if needed)
+        try:
+            int_meeting_id = int(meeting_id)  # Validate that the meeting ID is an integer
+        except ValueError:
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Meeting ID must be a number!")
+            return
+
+        # Map department names to queries for Cabinet Members and Cabinet Chairs
+        department_mapping = {
+            "All EC": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Executive Council'",
+            "EC + Cabinet Chairs": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Executive Council' OR Cabinet_Name = 'Cabinet Chair'",
+            "Rights Advocacy & Ethos": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Rights Advocacy & Ethos'",
+            "Events": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Events'",
+            "Academic Affairs": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Academic Affairs'",
+            "Food and Hygiene": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Food and Hygiene'",
+            "Public Relations and Communications": "SELECT HU_ID, Cabinet_ID FROM Cabinet_Member WHERE Cabinet_Name = 'Public Relations and Communications'"
+        }
+
+        # Check if the selected department exists in the dictionary
+        if department not in department_mapping:
+            QtWidgets.QMessageBox.warning(self, "Error", f"Invalid Cabinet Name: {department}")
+            return
+
+        # Get the query for the selected department
+        query = department_mapping[department]
+
+        try:
+            # Execute the query to get the Cabinet Members and Chairs for the selected department
+            conn = connect_to_database()
+            cursor = conn.cursor()
+            cursor.execute(query)
+            results = cursor.fetchall()
+
+            if results:
+                for result in results:
+                    hu_id, cabinet_id = result
+                    self.insert_meeting(int_meeting_id, meeting_date, meeting_time, department, hu_id, cabinet_id)
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", f"No members found for {department}")
+                return
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+        # Clear input fields for the next entry
+        self.meetingIDLineEdit.clear()
+        self.dateEdit.setDate(QDate.currentDate())  # Set date to today's date
+        self.timeEdit.clear()
+        self.deptComboBox.setCurrentIndex(0)  # Reset dropdown to the first option
+
+    def insert_meeting(self, meeting_id, meeting_date, meeting_time, department, hu_id, cabinet_id):
+        """Helper function to insert meeting into the database."""
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # Insert the meeting into the Meetings table
+            meeting_query = """INSERT INTO Meetings (MeetingID, MeetingDate, MeetingTime, Department)
+                            VALUES (?, ?, ?, ?)"""
+            cursor.execute(meeting_query, (meeting_id, meeting_date.toString("yyyy-MM-dd"), meeting_time.toString("HH:mm"), department))
+
+            # Commit the transaction
+            conn.commit()
+
+            # Insert the meeting into the Cabinet_Member or Cabinet_Chair table
+            if department == "Executive Council" or department == "EC + Cabinet Chairs":
+                cabinet_member_query = """INSERT INTO Cabinet_Member (HU_ID, Cabinet_ID, Cabinet_Name, Is_Active, Year) 
+                                        VALUES (?, ?, ?, 1, ?)"""
+                cursor.execute(cabinet_member_query, (hu_id, cabinet_id, department, "2024"))
+            elif department == "Cabinet Chair" or department == "EC + Cabinet Chairs":
+                cabinet_chair_query = """INSERT INTO Cabinet_Chair (HU_ID, Cabinet_ID, Cabinet_Name, Role, Is_Active, Year) 
+                                        VALUES (?, ?, ?, ?, 1, ?)"""
+                cursor.execute(cabinet_chair_query, (hu_id, cabinet_id, department, "Cabinet Chair", "2024"))
+
+            # Update the meetings table on UI
+            row_position = self.meetingsTable.rowCount()
+            self.meetingsTable.insertRow(row_position)
+            self.meetingsTable.setItem(row_position, 0, QTableWidgetItem(str(meeting_id)))
+            self.meetingsTable.setItem(row_position, 1, QTableWidgetItem(meeting_date.toString("yyyy-MM-dd")))
+            self.meetingsTable.setItem(row_position, 2, QTableWidgetItem(meeting_time.toString("HH:mm")))
+            self.meetingsTable.setItem(row_position, 3, QTableWidgetItem(department))
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
 
     def go_back_to_dashboard(self):
         self.close()
         self.dashboard = DashboardWindow()
         self.dashboard.show()
+
 
 
 class EventsCalendarWindow(QtWidgets.QMainWindow):
