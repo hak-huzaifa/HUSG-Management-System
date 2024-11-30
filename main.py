@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import QDate
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView, QMessageBox, QButtonGroup
 import sys
 import pyodbc
 
@@ -104,6 +104,11 @@ class RegistrationWindow(QtWidgets.QMainWindow):
         uic.loadUi('Register.ui',self)
         self.Reg_pushButton.clicked.connect(self.register_user)
         self.Back_pushButton.clicked.connect(self.go_back_to_login)
+        # Create a button group for radio buttons
+        self.designation_group = QButtonGroup(self)
+        self.designation_group.addButton(self.EC_radioButton)
+        self.designation_group.addButton(self.Chair_radioButton)
+        self.designation_group.addButton(self.Mem_radioButton)        
         
     def register_user(self):
         hu_id = self.IDLineEdit.text()
@@ -114,12 +119,16 @@ class RegistrationWindow(QtWidgets.QMainWindow):
         contact_number = self.contactLineEdit.text()
         #print(f"Selected Cabinet: '{cabinet_name}'")
         if self.EC_radioButton.isChecked():
+            print("Executive Council is selected")
             designation = "Executive Council"
         elif self.Chair_radioButton.isChecked():
+            print("Cabinet Chair is selected")
             designation = "Cabinet Chair"
         elif self.Mem_radioButton.isChecked():
+            print("Cabinet Member is selected")
             designation = "Cabinet Member"
         else:
+            print("No designation selected!")
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please select a designation!")
             return
         if not all([hu_id, password, confirm_password, email, cabinet_name, contact_number, designation]):
