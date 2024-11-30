@@ -455,7 +455,7 @@
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>220</x>
       <y>130</y>
       <width>141</width>
       <height>41</height>
@@ -480,8 +480,8 @@
      <rect>
       <x>50</x>
       <y>180</y>
-      <width>351</width>
-      <height>221</height>
+      <width>481</width>
+      <height>281</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -522,7 +522,7 @@ QTableWidget::item:hover {
     </property>
     <row>
      <property name="text">
-      <string>1</string>
+      <string/>
      </property>
     </row>
     <column>
@@ -540,27 +540,37 @@ QTableWidget::item:hover {
       <string>Date</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>Department</string>
+     </property>
+    </column>
     <item row="0" column="0">
      <property name="text">
-      <string>AHA001</string>
+      <string/>
      </property>
     </item>
     <item row="0" column="1">
      <property name="text">
-      <string>2:30-3:30</string>
+      <string/>
      </property>
     </item>
     <item row="0" column="2">
      <property name="text">
-      <string>13-9-2024</string>
+      <string/>
+     </property>
+    </item>
+    <item row="0" column="3">
+     <property name="text">
+      <string/>
      </property>
     </item>
    </widget>
    <widget class="QDateEdit" name="dateEdit">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>200</y>
+      <x>620</x>
+      <y>280</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -586,8 +596,8 @@ QDateEdit:focus {
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>150</y>
+      <x>610</x>
+      <y>240</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -609,8 +619,8 @@ QDateEdit:focus {
    <widget class="QLabel" name="label_11">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>250</y>
+      <x>600</x>
+      <y>320</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -632,8 +642,8 @@ QDateEdit:focus {
    <widget class="QTimeEdit" name="timeEdit">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>290</y>
+      <x>610</x>
+      <y>360</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -659,8 +669,8 @@ QTimeEdit:focus {
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>150</y>
+      <x>610</x>
+      <y>160</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -682,7 +692,7 @@ QTimeEdit:focus {
    <widget class="QLineEdit" name="meetingIDLineEdit">
     <property name="geometry">
      <rect>
-      <x>590</x>
+      <x>610</x>
       <y>200</y>
       <width>131</width>
       <height>31</height>
@@ -706,14 +716,14 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>A001</string>
+     <string/>
     </property>
    </widget>
    <widget class="QPushButton" name="Add_pushButton">
     <property name="geometry">
      <rect>
-      <x>620</x>
-      <y>350</y>
+      <x>670</x>
+      <y>500</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -780,8 +790,8 @@ QPushButton#Back_pushButton:hover {
    <widget class="QComboBox" name="deptComboBox">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>290</y>
+      <x>610</x>
+      <y>430</y>
       <width>151</width>
       <height>31</height>
      </rect>
@@ -843,8 +853,8 @@ QComboBox:focus {
    <widget class="QLabel" name="label_13">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>250</y>
+      <x>610</x>
+      <y>400</y>
       <width>141</width>
       <height>21</height>
      </rect>
