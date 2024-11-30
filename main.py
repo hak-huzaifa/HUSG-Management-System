@@ -60,7 +60,6 @@ class LoginWindow(QtWidgets.QMainWindow):
     def close_application(self):
         self.close()
 
-
 class DashboardWindow(QtWidgets.QMainWindow):
     def __init__(self, current_user_id):  # Accept the current_user_id
         super().__init__()
@@ -83,7 +82,7 @@ class DashboardWindow(QtWidgets.QMainWindow):
         self.close()
 
     def open_events_calendar(self):
-        self.calendar_window = EventsCalendarWindow()
+        self.calendar_window = EventsCalendarWindow(self.current_user_id)
         self.calendar_window.show()
         self.close()
 
@@ -99,9 +98,6 @@ class DashboardWindow(QtWidgets.QMainWindow):
 
     def close_application(self):
         self.close()
-
-
-
 
 class RegistrationWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -371,17 +367,159 @@ class MeetingsWindow(QtWidgets.QMainWindow):
         finally:
             conn.close()
 
-
 class EventsCalendarWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, current_user_id):
         super().__init__()
-        uic.loadUi('EventsCalender.ui',self)
+        uic.loadUi('EventsCalender.ui', self)
+        
+        # Store the current_user_id for this session
+        self.current_user_id = current_user_id
+
+        # Connect buttons to their respective methods
+        self.Add_pushButton.clicked.connect(self.add_event)
+        self.delete_pushButton.clicked.connect(self.delete_event)
         self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
+
+        # Load existing events when the window is initialized
+        self.load_existing_events()
 
     def go_back_to_dashboard(self):
         self.close()
-        self.dashboard = DashboardWindow()
+        self.dashboard = DashboardWindow(self.current_user_id)
         self.dashboard.show()
+
+    def load_existing_events(self):
+        """Load all existing events from the database and populate the table."""
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to fetch events for the logged-in user (or all events if needed)
+            query = """
+                SELECT Event_ID, Event_Name, Date, Time, Location, Created_by 
+                FROM Events_Calendar
+            """
+            cursor.execute(query)
+            events = cursor.fetchall()
+
+            # Clear the table first
+            self.eventsTable.setRowCount(0)
+
+            # Add each event to the table
+            for event in events:
+                row_position = self.eventsTable.rowCount()
+                self.eventsTable.insertRow(row_position)
+
+                self.eventsTable.setItem(row_position, 0, QTableWidgetItem(str(event[0])))  # Event ID
+                self.eventsTable.setItem(row_position, 1, QTableWidgetItem(str(event[1])))  # Event Name
+                self.eventsTable.setItem(row_position, 2, QTableWidgetItem(str(event[2])))  # Date
+                self.eventsTable.setItem(row_position, 3, QTableWidgetItem(str(event[3])))  # Time
+                self.eventsTable.setItem(row_position, 4, QTableWidgetItem(str(event[4])))  # Location
+                self.eventsTable.setItem(row_position, 5, QTableWidgetItem(str(event[5])))  # Created by
+
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while fetching events: {e}")
+
+    def add_event(self):
+        """Add a new event to the database and table."""
+        # Get the user input values from the UI
+        event_name = self.locationLineEdit.text().strip()
+        event_date = self.dateEdit.date()  # QDate object
+        event_time = self.timeEdit.time()  # QTime object
+        location = self.locationLineEdit_2.text().strip()
+
+        # Retrieve the current user's HU_ID (from the session)
+        created_by = self.current_user_id  # Use the actual HU_ID
+
+        # Input validation
+        if not all([event_name, event_date, event_time, location]):
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
+            return
+
+        # Convert QDate and QTime to strings in the correct format for SQL
+        event_date_str = event_date.toString("yyyy-MM-dd")  # Format the date as 'yyyy-MM-dd'
+        event_time_str = event_time.toString("HH:mm:ss")  # Format the time as 'HH:mm:ss'
+
+        # Add milliseconds (precision) to the time: HH:mm:ss.000 (for SQL Server)
+        event_time_str_with_precision = f"{event_time_str}.000"  # Add 3 digits for milliseconds
+
+        # Get the next available Event_ID based on the number of rows in the table
+        event_id = self.eventsTable.rowCount() + 1  # Add 1 to the current row count
+
+        # Debugging: Print the formatted values before insertion
+        print(f"Inserting Event: {event_id}, {event_name}, {event_date_str}, {event_time_str_with_precision}, {location}, {created_by}")
+
+        # Insert the event into the database
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to insert event data into the database (EventDate as datetime)
+            query = """
+                INSERT INTO Events_Calendar (Event_ID, Event_Name, Date, Time, Location, Created_by)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """
+            cursor.execute(query, (event_id, event_name, event_date_str, event_time_str_with_precision, location, created_by))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Success", "Event added successfully!")
+
+            # Reload events to update the table
+            self.load_existing_events()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+        # Clear the input fields for the next event
+        self.locationLineEdit.clear()
+        self.locationLineEdit_2.clear()
+        self.dateEdit.setDate(QDate.currentDate())  # Set date to today's date
+        self.timeEdit.clear()
+        
+    def delete_event(self):
+        # Get selected row from the table
+        selected_row = self.eventsTable.currentRow()
+        
+        if selected_row < 0:
+            QtWidgets.QMessageBox.warning(self, "No Selection", "Please select an event to delete.")
+            return
+
+        # Get the Event ID of the selected event
+        event_id = self.eventsTable.item(selected_row, 0).text()
+
+        # Confirm deletion
+        response = QtWidgets.QMessageBox.question(
+            self, 
+            "Delete Event", 
+            f"Are you sure you want to delete the event with ID {event_id}?", 
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No, 
+            QtWidgets.QMessageBox.StandardButton.No
+        )
+
+        if response == QtWidgets.QMessageBox.StandardButton.Yes:
+            try:
+                conn = connect_to_database()
+                cursor = conn.cursor()
+
+                # Delete the event from the database using Event ID
+                delete_query = "DELETE FROM Events_Calendar WHERE Event_ID = ?"
+                cursor.execute(delete_query, (event_id,))
+                conn.commit()
+
+                # Remove the event from the table
+                self.eventsTable.removeRow(selected_row)
+                QtWidgets.QMessageBox.information(self, "Event Deleted", f"Event with ID {event_id} has been deleted.")
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while deleting the event: {e}")
+            finally:
+                conn.close()
+        else:
+            # If the user clicks 'No', do nothing
+            pass
 
 class BudgetAllocationWindow(QtWidgets.QMainWindow):
     def __init__(self):
