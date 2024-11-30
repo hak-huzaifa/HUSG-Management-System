@@ -92,7 +92,7 @@ class DashboardWindow(QtWidgets.QMainWindow):
         self.close()
 
     def open_task_allocation(self):
-        self.tasks_window = TaskAllocationWindow()
+        self.tasks_window = TaskAllocationWindow(self.current_user_id)
         self.tasks_window.show()
         self.close()
 
@@ -533,15 +533,188 @@ class BudgetAllocationWindow(QtWidgets.QMainWindow):
         self.dashboard.show()
 
 class TaskAllocationWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, current_user_id):  # Accept current_user_id as a parameter
         super().__init__()
-        uic.loadUi('taskallocation2.ui',self)
+        uic.loadUi('taskallocation2.ui', self)
+
+        # Store the current_user_id for this session
+        self.current_user_id = current_user_id
+
+        # Connect buttons to their respective methods
+        self.assign_pushButton.clicked.connect(self.assign_task)
+        self.Status_pushButton.clicked.connect(self.change_status)
         self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
+
+        # Load existing tasks when the window is initialized
+        self.load_existing_tasks()
 
     def go_back_to_dashboard(self):
         self.close()
-        self.dashboard = DashboardWindow()
+        self.dashboard = DashboardWindow(self.current_user_id)
         self.dashboard.show()
+
+    def load_existing_tasks(self):
+        """Load all existing tasks from the database and populate the table."""
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to fetch tasks for the logged-in user
+            query = """
+                SELECT Task_ID, Task_Name, Description, Deadline, Status, Created_by, Assigned_To 
+                FROM Task_Allocation
+                WHERE Assigned_To = ? OR Created_by = ?
+            """
+            cursor.execute(query, (self.current_user_id, self.current_user_id))
+            tasks = cursor.fetchall()
+
+            # Clear the table first
+            self.tableWidget.setRowCount(0)
+
+            # Add each task to the table
+            for task in tasks:
+                row_position = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row_position)
+
+                self.tableWidget.setItem(row_position, 0, QTableWidgetItem(str(task[0])))  # Task ID
+                self.tableWidget.setItem(row_position, 1, QTableWidgetItem(str(task[1])))  # Task Name
+                self.tableWidget.setItem(row_position, 2, QTableWidgetItem(str(task[2])))  # Description
+                self.tableWidget.setItem(row_position, 3, QTableWidgetItem(str(task[3])))  # Deadline
+                self.tableWidget.setItem(row_position, 4, QTableWidgetItem(str(task[4])))  # Status
+                self.tableWidget.setItem(row_position, 5, QTableWidgetItem(str(task[5])))  # Created By
+                self.tableWidget.setItem(row_position, 6, QTableWidgetItem(str(task[6])))  # Assigned To
+
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while fetching tasks: {e}")
+
+    def assign_task(self):
+        """Assign a new task to a cabinet member."""
+        # Get the user input values from the UI
+        hu_id = self.ID_lineEdit.text().strip()
+        cabinet_name = self.deptComboBox.currentText().strip()
+        task_id = self.TaskID_lineEdit.text().strip()
+        task_name = self.TaskName_lineEdit_2.text().strip()
+        description = self.Descriptiontext.toPlainText().strip()
+        deadline = self.dateEdit.date()  # QDate object
+
+        # Retrieve the current user's HU_ID (from the session)
+        created_by = self.current_user_id  # Use the actual HU_ID
+
+        # Input validation
+        if not all([hu_id, task_id, task_name, description, deadline]):
+            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
+            return
+
+        # Validate that the HU ID is a valid ID in the database and belongs to the selected cabinet
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # Query to check if the HU_ID is valid and if the HU_ID belongs to the selected cabinet
+            query = """
+                SELECT HU_ID FROM Cabinet_Member 
+                WHERE HU_ID = ? AND Cabinet_Name = ?
+            """
+            cursor.execute(query, (hu_id, cabinet_name))
+            result = cursor.fetchone()
+
+            if not result:
+                QtWidgets.QMessageBox.warning(self, "Invalid HU ID", f"The HU ID {hu_id} is not part of the {cabinet_name} cabinet.")
+                conn.close()
+                return
+
+            # Convert QDate to string in the correct format for SQL
+            deadline_str = deadline.toString("yyyy-MM-dd")  # Format the date as 'yyyy-MM-dd'
+
+            # Set Task Status to Pending (0 by default)
+            status = 0  # Pending
+
+            # SQL query to insert the task into the database
+            insert_query = """
+                INSERT INTO Task_Allocation (Task_ID, Task_Name, Description, Deadline, Status, Created_by, Assigned_To)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """
+            cursor.execute(insert_query, (task_id, task_name, description, deadline_str, status, created_by, hu_id))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Success", f"Task {task_id} assigned successfully!")
+
+            # Reload tasks to update the table
+            self.load_existing_tasks()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+        # Clear input fields for the next task
+        self.ID_lineEdit.clear()
+        self.TaskID_lineEdit.clear()
+        self.TaskName_lineEdit_2.clear()
+        self.Descriptiontext.clear()
+        self.dateEdit.setDate(QDate.currentDate())  # Set date to today's date
+
+    def change_status(self):
+        """Change the status of a task (Completed or Dropped)."""
+        # Get selected row from the table
+        selected_row = self.tableWidget.currentRow()
+        
+        if selected_row < 0:
+            QtWidgets.QMessageBox.warning(self, "No Selection", "Please select a task to change its status.")
+            return
+
+        # Get the Task ID and Assigned_ID of the selected task
+        task_id = self.tableWidget.item(selected_row, 0).text()
+        assigned_id = self.tableWidget.item(selected_row, 6).text()
+
+        # Validate that the current user is the one assigned to the task
+        if str(self.current_user_id) != assigned_id:
+            QtWidgets.QMessageBox.warning(self, "Invalid Task", "This task is not assigned to you.")
+            return
+
+        # Check the selected status
+        if self.StatusgroupBox_2.checkedButton() is None:
+            QtWidgets.QMessageBox.warning(self, "No Status Selected", "Please select a status (Completed, Pending, Dropped).")
+            return
+
+        # Get the status value from the radio buttons
+        status = self.StatusgroupBox_2.checkedButton().text()
+
+        if status == "Completed":
+            status_value = 1  # Completed
+        elif status == "Dropped":
+            status_value = 2  # Dropped
+        else:
+            status_value = 0  # Pending
+
+        # Update the status in the database
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to update the task status
+            update_query = """
+                UPDATE Task_Allocation
+                SET Status = ?
+                WHERE Task_ID = ? AND Assigned_To = ?
+            """
+            cursor.execute(update_query, (status_value, task_id, self.current_user_id))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Status Updated", "The status of the task has been updated.")
+
+            # Reload tasks to update the table
+            self.load_existing_tasks()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+        finally:
+            conn.close()
+
+
+
 
 def main():
     app = QApplication(sys.argv)
