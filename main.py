@@ -25,7 +25,11 @@ class LoginWindow(QtWidgets.QMainWindow):
         if not hu_id or not password:
             QtWidgets.QMessageBox.warning(self,"Input Error","FILL ALL FIELDS!")
             return
-        
+            
+        if not hu_id.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Invalid ID", "Please add a valid HU ID (only integers).")
+            return
+            
         try:
             conn=connect_to_database()
             cursor=conn.cursor()
