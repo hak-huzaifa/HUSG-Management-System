@@ -801,7 +801,7 @@ QPushButton#Back_pushButton:hover {
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>100</y>
       <width>71</width>
       <height>21</height>
@@ -814,7 +814,7 @@ QPushButton#Back_pushButton:hover {
    <widget class="QComboBox" name="deptComboBox">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>120</x>
       <y>100</y>
       <width>281</width>
       <height>22</height>
@@ -867,10 +867,10 @@ QComboBox:focus {
    <widget class="QLineEdit" name="ID_lineEdit">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>60</y>
-      <width>281</width>
-      <height>31</height>
+      <x>120</x>
+      <y>50</y>
+      <width>291</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -897,7 +897,7 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>60</y>
       <width>71</width>
       <height>21</height>
@@ -910,8 +910,8 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>130</y>
+      <x>20</x>
+      <y>140</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -923,10 +923,10 @@ QLineEdit:focus {
    <widget class="QLineEdit" name="TaskID_lineEdit">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>130</y>
       <width>291</width>
-      <height>31</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -953,8 +953,8 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>170</y>
+      <x>20</x>
+      <y>190</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -1063,10 +1063,10 @@ QPushButton#assign_pushButton:hover {
    <widget class="QLineEdit" name="TaskName_lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>170</y>
+      <x>120</x>
+      <y>180</y>
       <width>301</width>
-      <height>31</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -1093,8 +1093,8 @@ QLineEdit:focus {
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>220</y>
+      <x>20</x>
+      <y>240</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -1106,10 +1106,10 @@ QLineEdit:focus {
    <widget class="QTextEdit" name="Descriptiontext">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>220</y>
+      <x>120</x>
+      <y>230</y>
       <width>361</width>
-      <height>61</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="styleSheet">
