@@ -532,6 +532,11 @@ QTableWidget::item:hover {
     </column>
     <column>
      <property name="text">
+      <string>Added_by</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
       <string>Time</string>
      </property>
     </column>
@@ -831,7 +836,7 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
-      <string>Communications and Public Relations</string>
+      <string>Public Relations and Communications</string>
      </property>
     </item>
     <item>
@@ -846,7 +851,7 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
-      <string>Rights, Advocacy and Ethos</string>
+      <string>Rights Advocacy &amp; Ethos</string>
      </property>
     </item>
    </widget>

@@ -509,7 +509,17 @@ QTableWidget::item:hover {
     </column>
     <column>
      <property name="text">
+      <string>Event Name</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
       <string>Date</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Location</string>
      </property>
     </column>
     <column>
@@ -519,7 +529,7 @@ QTableWidget::item:hover {
     </column>
     <column>
      <property name="text">
-      <string>Location</string>
+      <string>Created by</string>
      </property>
     </column>
     <item row="0" column="0">

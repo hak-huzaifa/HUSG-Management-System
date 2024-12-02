@@ -61,12 +61,15 @@ class LoginWindow(QtWidgets.QMainWindow):
         self.close()
 
 class DashboardWindow(QtWidgets.QMainWindow):
-    def __init__(self, current_user_id):  # Accept the current_user_id
+    def __init__(self, current_user_id):  # Accept current_user_id as a parameter
         super().__init__()
         uic.loadUi('Dashboard.ui', self)  # Load the Dashboard UI
 
         # Store the current_user_id for this session
         self.current_user_id = current_user_id
+
+        # Check the user's role (Cabinet Chair or Executive Council)
+        self.check_user_role()
 
         # Connect push buttons to their respective methods
         self.meetingspush.clicked.connect(self.open_meetings)
@@ -74,6 +77,34 @@ class DashboardWindow(QtWidgets.QMainWindow):
         self.Financepush.clicked.connect(self.open_budget_allocation)
         self.workpush.clicked.connect(self.open_task_allocation)
         self.closeButton.clicked.connect(self.close_application)
+
+    def check_user_role(self):
+        #Check if the user is a Cabinet Chair or Executive Council and allow access to budget allocation.
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to check if the current user is a Cabinet Chair or Executive Council
+            query = """
+                SELECT Designation
+                FROM [User]
+                WHERE HU_ID = ?
+            """
+            cursor.execute(query, (self.current_user_id,))
+            user = cursor.fetchone()
+
+            if user:
+                designation = user[0]
+                if designation not in ["Cabinet Chair", "Executive Council"]:
+                    # Disable the Finance button for Cabinet Members
+                    self.Financepush.setDisabled(True)
+                    #QtWidgets.QMessageBox.warning(self, "Permission Denied", "Only Cabinet Chairs and Executive Council members can access the Budget Allocation screen.")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "Unable to fetch user role.")
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while checking user role: {e}")
 
     def open_meetings(self):
         # Pass current_user_id to MeetingsWindow
@@ -87,7 +118,7 @@ class DashboardWindow(QtWidgets.QMainWindow):
         self.close()
 
     def open_budget_allocation(self):
-        self.budget_window = BudgetAllocationWindow()
+        self.budget_window = BudgetAllocationWindow(self.current_user_id)
         self.budget_window.show()
         self.close()
 
@@ -161,6 +192,7 @@ class RegistrationWindow(QtWidgets.QMainWindow):
             self.go_back_to_login()
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+
     def go_back_to_login(self):
         self.close()
         self.login_form = LoginWindow()
@@ -174,6 +206,9 @@ class MeetingsWindow(QtWidgets.QMainWindow):
         # Store the current_user_id for this session
         self.current_user_id = current_user_id
 
+        # Check the user's designation
+        self.check_user_role()
+
         # Connect buttons
         self.Add_pushButton.clicked.connect(self.add_meeting)
         self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
@@ -181,13 +216,42 @@ class MeetingsWindow(QtWidgets.QMainWindow):
         # Load existing meetings when the window is initialized
         self.load_existing_meetings()
 
+    def check_user_role(self):
+        #Check if the user is a Cabinet Chair or Executive Council and allow adding meetings.
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to check if the current user is a Cabinet Chair or Executive Council
+            query = """
+                SELECT Designation
+                FROM [User]
+                WHERE HU_ID = ?
+            """
+            cursor.execute(query, (self.current_user_id,))
+            user = cursor.fetchone()
+
+            if user:
+                designation = user[0]
+                if designation not in ["Cabinet Chair", "Executive Council"]:
+                    # If the user is not a Cabinet Chair or Executive Council, disable the Add button
+                    self.Add_pushButton.setDisabled(True)
+                    self.Add_pushButton.setText("View Only")
+                    QtWidgets.QMessageBox.warning(self, "Permission Denied", "Only Cabinet Chairs and Executive Council members can add meetings.")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "Unable to fetch user role.")
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while checking user role: {e}")
+
     def go_back_to_dashboard(self):
         self.close()
         self.dashboard = DashboardWindow(self.current_user_id)
         self.dashboard.show()
 
     def load_existing_meetings(self):
-        """Load all existing meetings from the database and populate the table."""
+        #Load all existing meetings from the database and populate the table.
         try:
             conn = connect_to_database()
             cursor = conn.cursor()
@@ -213,167 +277,95 @@ class MeetingsWindow(QtWidgets.QMainWindow):
                 self.meetingsTable.setItem(row_position, 2, QTableWidgetItem(str(meeting[2])))  # Time
                 self.meetingsTable.setItem(row_position, 3, QTableWidgetItem(str(meeting[3])))  # Date
                 self.meetingsTable.setItem(row_position, 4, QTableWidgetItem(str(meeting[4])))  # Invitation To
-
             conn.close()
 
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while fetching meetings: {e}")
 
     def add_meeting(self):
-        # Disable the Add button immediately after it's clicked to prevent multiple clicks
-        self.Add_pushButton.setDisabled(True)
-
-        # Get the user input values from the UI
-        meeting_id = self.meetingIDLineEdit.text().strip()
-        meeting_date = self.dateEdit.date()  # QDate object
-        meeting_time = self.timeEdit.time()  # QTime object
-        department = self.deptComboBox.currentText().strip()
-
-        # Retrieve the current user's HU_ID (from the session)
-        created_by = self.current_user_id  # Use the actual HU_ID
-
-        # Input validation
-        if not all([meeting_id, department]):
-            QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
-            self.Add_pushButton.setEnabled(True)  # Re-enable the button
-            return
-
-        # Validate Meeting ID (Ensure it's numeric)
-        if not meeting_id.isdigit():
-            QtWidgets.QMessageBox.warning(self, "Invalid Meeting ID", "Please enter a valid numeric Meeting ID.")
-            self.Add_pushButton.setEnabled(True)  # Re-enable the button
-            return
-
-        # Convert QDate and QTime to strings in the correct format for SQL
-        meeting_date_str = meeting_date.toString("yyyy-MM-dd")  # Format the date as 'yyyy-MM-dd'
-        meeting_time_str = meeting_time.toString("HH:mm:ss")  # Format the time as 'HH:mm:ss'
-
-        # Add milliseconds (precision) to the time: HH:mm:ss.000 (for SQL Server)
-        meeting_time_str_with_precision = f"{meeting_time_str}.000"  # Add 3 digits for milliseconds
-
-        # Debugging: Print the formatted values before insertion
-        print(f"Inserting Meeting: {meeting_id}, {created_by}, {meeting_time_str_with_precision}, {meeting_date_str}, {department}")
-
-        # Handle department-based mapping to fetch Cabinet Members and Cabinet Chairs
+        # Check if user is authorized to add a meeting
         try:
             conn = connect_to_database()
             cursor = conn.cursor()
 
-            # Define SQL queries for each department to fetch Cabinet Members and Chairs
-            if department == "All EC":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Executive Council'
-                """
-            elif department == "EC + Cabinet Chairs":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Executive Council'
-                    UNION
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Cabinet Chair'
-                """
-            elif department == "Rights Advocacy & Ethos":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Rights Advocacy & Ethos'
-                """
-            elif department == "Events":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Events'
-                """
-            elif department == "Academic Affairs":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Academic Affairs'
-                """
-            elif department == "Food and Hygiene":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Food and Hygiene'
-                """
-            elif department == "Public Relations and Communications":
-                query = """
-                    SELECT HU_ID, Cabinet_ID FROM Cabinet_Member 
-                    WHERE Cabinet_Name = 'Public Relations and Communications'
-                """
+            # SQL query to check if the current user is a Cabinet Chair or Executive Council
+            query = """
+                SELECT Designation
+                FROM [User]
+                WHERE HU_ID = ?
+            """
+            cursor.execute(query, (self.current_user_id,))
+            user = cursor.fetchone()
+
+            if user:
+                designation = user[0]
+                if designation not in ["Cabinet Chair", "Executive Council"]:
+                    QtWidgets.QMessageBox.warning(self, "Permission Denied", "Only Cabinet Chairs and Executive Council members can add meetings.")
+                    conn.close()
+                    return
             else:
-                QtWidgets.QMessageBox.warning(self, "Error", f"Invalid Cabinet Name: {department}")
-                self.Add_pushButton.setEnabled(True)  # Re-enable the button
+                QtWidgets.QMessageBox.warning(self, "Error", "Unable to fetch user role.")
+                conn.close()
                 return
 
-            # Execute the query and fetch results
-            cursor.execute(query)
-            results = cursor.fetchall()
+            # Proceed with adding meeting if the user is allowed
+            meeting_id = self.meetingIDLineEdit.text().strip()
+            meeting_date = self.dateEdit.date()  # QDate object
+            meeting_time = self.timeEdit.time()  # QTime object
+            department = self.deptComboBox.currentText().strip()
 
-            if results:
-                # Insert the meeting for each Cabinet Member and Cabinet Chair
-                for result in results:
-                    hu_id, cabinet_id = result
-                    self.insert_meeting_into_table(meeting_id, created_by, meeting_time_str_with_precision, meeting_date_str, department, hu_id, cabinet_id)
+            # Retrieve the current user's HU_ID (from the session)
+            created_by = self.current_user_id  # Use the actual HU_ID
 
-                # Optionally, insert into the database as well
-                self.insert_meeting_into_db(meeting_id, created_by, meeting_time_str_with_precision, meeting_date_str, department)
-
-            else:
-                QtWidgets.QMessageBox.warning(self, "Error", f"No members found for {department}")
-                self.Add_pushButton.setEnabled(True)  # Re-enable the button
+            # Input validation
+            if not all([meeting_id, department]):
+                QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
                 return
+
+            # Validate Meeting ID (Ensure it's numeric)
+            if not meeting_id.isdigit():
+                QtWidgets.QMessageBox.warning(self, "Invalid Meeting ID", "Please enter a valid numeric Meeting ID.")
+                return
+
+            # Convert QDate and QTime to strings in the correct format for SQL
+            meeting_date_str = meeting_date.toString("yyyy-MM-dd")  # Format the date as 'yyyy-MM-dd'
+            meeting_time_str = meeting_time.toString("HH:mm:ss")  # Format the time as 'HH:mm:ss'
+
+            # Add milliseconds (precision) to the time: HH:mm:ss.000 (for SQL Server)
+            meeting_time_str_with_precision = f"{meeting_time_str}.000"  # Add 3 digits for milliseconds
+
+            # SQL query to insert the meeting into the database (MeetingDate as datetime)
+            query = """
+                INSERT INTO Meetings (Meeting_ID, Created_By, Time, Date, Invitation_to)
+                VALUES (?, ?, ?, ?, ?)
+            """
+            cursor.execute(query, (meeting_id, created_by, meeting_time_str_with_precision, meeting_date_str, department))
+            conn.commit()
+
+            QtWidgets.QMessageBox.information(self, "Success", "Meeting added successfully!")
+            self.load_existing_meetings()
 
         except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
-            self.Add_pushButton.setEnabled(True)  # Re-enable the button
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while adding the meeting: {e}")
         finally:
             conn.close()
 
-        # Re-enable the Add button and clear the input fields for the next entry
-        self.Add_pushButton.setEnabled(True)
+        # Clear the input fields for the next meeting
         self.meetingIDLineEdit.clear()
         self.dateEdit.setDate(QDate.currentDate())  # Set date to today's date
         self.timeEdit.clear()
         self.deptComboBox.setCurrentIndex(0)  # Reset dropdown to the first option
 
-    def insert_meeting_into_table(self, meeting_id, created_by, meeting_time, meeting_date, department, hu_id, cabinet_id):
-        """Insert the meeting data into the table (UI)."""
-        row_position = self.meetingsTable.rowCount()
-        self.meetingsTable.insertRow(row_position)
-
-        # Insert the values into the new row in the table
-        self.meetingsTable.setItem(row_position, 0, QTableWidgetItem(meeting_id))
-        self.meetingsTable.setItem(row_position, 1, QTableWidgetItem(str(created_by)))  # Ensure created_by is int
-        self.meetingsTable.setItem(row_position, 2, QTableWidgetItem(meeting_time))
-        self.meetingsTable.setItem(row_position, 3, QTableWidgetItem(meeting_date))
-        self.meetingsTable.setItem(row_position, 4, QTableWidgetItem(department))
-
-    def insert_meeting_into_db(self, meeting_id, created_by, meeting_time, meeting_date, department):
-        """Insert the meeting details into the database."""
-        try:
-            conn = connect_to_database()
-            cursor = conn.cursor()
-
-            # SQL query to insert meeting data into the database (MeetingDate as datetime)
-            query = """
-                INSERT INTO Meetings (Meeting_ID, Created_By, Time, Date, Invitation_to)
-                VALUES (?, ?, ?, ?, ?)
-            """
-            cursor.execute(query, (meeting_id, int(created_by), meeting_time, meeting_date, department))  # Ensure created_by is an integer
-            conn.commit()
-
-            QtWidgets.QMessageBox.information(self, "Success", "Meeting added successfully!")
-
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred: {e}")
-        finally:
-            conn.close()
-
 class EventsCalendarWindow(QtWidgets.QMainWindow):
     def __init__(self, current_user_id):
         super().__init__()
         uic.loadUi('EventsCalender.ui', self)
-        
+
         # Store the current_user_id for this session
         self.current_user_id = current_user_id
+
+        # Check the user's role (Cabinet Chair or Executive Council)
+        self.check_user_role()
 
         # Connect buttons to their respective methods
         self.Add_pushButton.clicked.connect(self.add_event)
@@ -383,13 +375,42 @@ class EventsCalendarWindow(QtWidgets.QMainWindow):
         # Load existing events when the window is initialized
         self.load_existing_events()
 
+    def check_user_role(self):
+        #Check if the user is a Cabinet Chair or Executive Council and allow adding/deleting events.
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to check if the current user is a Cabinet Chair or Executive Council
+            query = """
+                SELECT Designation
+                FROM [User]
+                WHERE HU_ID = ?
+            """
+            cursor.execute(query, (self.current_user_id,))
+            user = cursor.fetchone()
+
+            if user:
+                designation = user[0]
+                if designation not in ["Cabinet Chair", "Executive Council"]:
+                    # Disable Add and Delete buttons for Cabinet Members
+                    self.Add_pushButton.setDisabled(True)
+                    self.delete_pushButton.setDisabled(True)
+                    QtWidgets.QMessageBox.warning(self, "Permission Denied", "Only Cabinet Chairs and Executive Council members can add or delete events.")
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "Unable to fetch user role.")
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while checking user role: {e}")
+
     def go_back_to_dashboard(self):
         self.close()
         self.dashboard = DashboardWindow(self.current_user_id)
         self.dashboard.show()
 
     def load_existing_events(self):
-        """Load all existing events from the database and populate the table."""
+        #Load all existing events from the database and populate the table.
         try:
             conn = connect_to_database()
             cursor = conn.cursor()
@@ -409,21 +430,18 @@ class EventsCalendarWindow(QtWidgets.QMainWindow):
             for event in events:
                 row_position = self.eventsTable.rowCount()
                 self.eventsTable.insertRow(row_position)
-
                 self.eventsTable.setItem(row_position, 0, QTableWidgetItem(str(event[0])))  # Event ID
                 self.eventsTable.setItem(row_position, 1, QTableWidgetItem(str(event[1])))  # Event Name
                 self.eventsTable.setItem(row_position, 2, QTableWidgetItem(str(event[2])))  # Date
-                self.eventsTable.setItem(row_position, 3, QTableWidgetItem(str(event[3])))  # Time
-                self.eventsTable.setItem(row_position, 4, QTableWidgetItem(str(event[4])))  # Location
+                self.eventsTable.setItem(row_position, 3, QTableWidgetItem(str(event[4])))  # Time
+                self.eventsTable.setItem(row_position, 4, QTableWidgetItem(str(event[3])))  # Location
                 self.eventsTable.setItem(row_position, 5, QTableWidgetItem(str(event[5])))  # Created by
-
             conn.close()
-
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while fetching events: {e}")
 
     def add_event(self):
-        """Add a new event to the database and table."""
+        #Add a new event to the database and table.
         # Get the user input values from the UI
         event_name = self.locationLineEdit.text().strip()
         event_date = self.dateEdit.date()  # QDate object
@@ -479,11 +497,11 @@ class EventsCalendarWindow(QtWidgets.QMainWindow):
         self.locationLineEdit_2.clear()
         self.dateEdit.setDate(QDate.currentDate())  # Set date to today's date
         self.timeEdit.clear()
-        
+
     def delete_event(self):
         # Get selected row from the table
         selected_row = self.eventsTable.currentRow()
-        
+
         if selected_row < 0:
             QtWidgets.QMessageBox.warning(self, "No Selection", "Please select an event to delete.")
             return
@@ -493,10 +511,10 @@ class EventsCalendarWindow(QtWidgets.QMainWindow):
 
         # Confirm deletion
         response = QtWidgets.QMessageBox.question(
-            self, 
-            "Delete Event", 
-            f"Are you sure you want to delete the event with ID {event_id}?", 
-            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No, 
+            self,
+            "Delete Event",
+            f"Are you sure you want to delete the event with ID {event_id}?",
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
             QtWidgets.QMessageBox.StandardButton.No
         )
 
@@ -522,15 +540,144 @@ class EventsCalendarWindow(QtWidgets.QMainWindow):
             pass
 
 class BudgetAllocationWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, hu_id):
         super().__init__()
-        uic.loadUi('budgetallocation2.ui',self)
-        self.Back_pushButton.clicked.connect(self.go_back_to_dashboard)
-    
-    def go_back_to_dashboard(self):
-        self.close()
-        self.dashboard = DashboardWindow()
-        self.dashboard.show()
+        uic.loadUi('budgetallocation2.ui', self)  # Assuming the UI is in a .ui file
+        self.hu_id = hu_id  # The logged-in user's ID
+
+        # Connect buttons to respective functions
+        self.deptComboBox.currentTextChanged.connect(self.update_balance)  # No recipient HU ID anymore
+        self.allocate_pushButton.clicked.connect(self.allocate_budget)
+        self.Back_pushButton.clicked.connect(self.back_button_click)
+
+        # Load cabinets and update total budget
+        self.load_cabinets()
+        self.update_total_budget()
+
+
+    def load_cabinets(self):
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to fetch all cabinet data
+            query = """
+                SELECT cabinet_name, budget 
+                FROM Cabinet
+            """
+            cursor.execute(query)
+            cabinets = cursor.fetchall()
+
+            # Clear the table first to avoid duplication
+            self.tableWidget.setRowCount(0)
+
+            # Add each cabinet to the table
+            for cabinet in cabinets:
+                row_position = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row_position)
+
+                # Set the cabinet details in the table
+                self.tableWidget.setItem(row_position, 0, QTableWidgetItem(cabinet[0]))  # Cabinet Name
+                self.tableWidget.setItem(row_position, 1, QTableWidgetItem(str(cabinet[1])))  # Budget
+
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"An error occurred while fetching cabinets: {e}")
+
+    def update_balance(self, selected_cabinet_name):
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # Ensure that the cabinet_name is correctly referenced and the budget is a numeric value
+            query = '''
+                SELECT budget
+                FROM cabinet
+                WHERE cabinet_name = ?
+            '''
+            cursor.execute(query, (selected_cabinet_name,))
+            result = cursor.fetchone()
+
+            # if result:
+            #     cabinet_budget = result[0]
+            #     self.balance_label.setText(f"Balance: {cabinet_budget}")
+
+            conn.close()
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"Error updating balance: {e}")
+
+    def update_total_budget(self):
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # Get the sum of all cabinet budgets
+            cursor.execute("SELECT SUM(Budget) FROM Cabinet")
+            total_budget = cursor.fetchone()[0]
+
+            if total_budget is not None:
+                self.lcdNumber.display(total_budget)  # Use display() method for LCDNumber widget
+            else:
+                self.lcdNumber.display(0)  # Display 0 if there is no budget
+
+            conn.close()
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"Error calculating total budget: {e}")
+
+    def allocate_budget(self):
+        selected_cabinet_name = self.deptComboBox.currentText()
+        try:
+            amount = int(self.ID_lineEdit_2.text())  # Getting the amount to allocate
+
+            if amount != 0:
+                conn = connect_to_database()
+                cursor = conn.cursor()
+
+                # Get the current budget for the selected cabinet from the database
+                cursor.execute('''
+                    SELECT budget
+                    FROM cabinet
+                    WHERE cabinet_name = ?
+                ''', (selected_cabinet_name,))
+                current_budget = cursor.fetchone()
+
+                if current_budget:
+                    new_budget = current_budget[0] + amount  # Add the allocation to the current budget
+
+                    # Update the selected cabinet's budget in the database
+                    cursor.execute('''
+                        UPDATE cabinet
+                        SET budget = ?
+                        WHERE cabinet_name = ?
+                    ''', (new_budget, selected_cabinet_name))
+                    conn.commit()
+
+                    # Refresh the UI with the updated values
+                    self.update_balance(selected_cabinet_name)
+                    self.update_total_budget()
+
+                    # Now, manually update the table with the new values (refresh the row)
+                    for row in range(self.tableWidget.rowCount()):
+                        if self.tableWidget.item(row, 0).text() == selected_cabinet_name:
+                            # Update the budget column with the new budget value
+                            self.tableWidget.setItem(row, 1, QTableWidgetItem(str(new_budget)))  # Update the budget column
+
+                    # Show a success message after updating the budget
+                    QtWidgets.QMessageBox.information(self, "Success", "Budget allocated successfully!")
+
+                conn.close()
+
+        except ValueError:
+            QtWidgets.QMessageBox.warning(self, "Invalid Input", "Please enter a valid number for the amount.")
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Database Error", f"Error allocating budget: {e}")
+
+    def back_button_click(self):
+        """Return to the Dashboard window."""
+        self.close()  # Close the current window (Budget Allocation Window)
+        self.dashboard_window = DashboardWindow(self.hu_id)  # Assuming DashboardWindow exists
+        self.dashboard_window.show()  # Show the Dashboard window
 
 class TaskAllocationWindow(QtWidgets.QMainWindow):
     def __init__(self, current_user_id):
@@ -539,6 +686,9 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
 
         # Store the current_user_id for this session
         self.current_user_id = current_user_id
+
+        # Check the user's role
+        self.check_user_role()
 
         # Connect buttons to their respective methods
         self.assign_pushButton.clicked.connect(self.assign_task)
@@ -552,6 +702,40 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
 
         # Load existing tasks when the window is initialized
         self.load_existing_tasks()
+
+    def check_user_role(self):
+        """Check the user's role (Cabinet Chair or Executive Council) and disable status group box for them."""
+        try:
+            conn = connect_to_database()
+            cursor = conn.cursor()
+
+            # SQL query to check if the current user is a Cabinet Chair or Executive Council
+            query = """
+                SELECT Designation
+                FROM [User]
+                WHERE HU_ID = ?
+            """
+            cursor.execute(query, (self.current_user_id,))
+            user = cursor.fetchone()
+
+            if user:
+                designation = user[0]
+                if designation in ["Cabinet Chair", "Executive Council"]:
+                    # Disable the status combobox for Cabinet Chair or Executive Council
+                    self.StatusgroupBox_2.setDisabled(True)  # Disable the group box
+                    self.Status_pushButton.setDisabled(True)  # Disable the change status button
+                else:
+                    # Enable status functionality for Cabinet Members
+                    self.StatusgroupBox_2.setEnabled(True)
+                    self.Status_pushButton.setEnabled(True)
+
+            else:
+                QtWidgets.QMessageBox.warning(self, "Error", "Unable to fetch user role.")
+
+            conn.close()
+
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Error", f"An error occurred while checking user role: {e}")
 
     def go_back_to_dashboard(self):
         self.close()
@@ -606,7 +790,6 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
 
     def assign_task(self):
         """Assign a new task to a cabinet member."""
-        # Get the user input values from the UI
         hu_id = self.ID_lineEdit.text().strip()
         cabinet_name = self.deptComboBox.currentText().strip()
         task_id = self.TaskID_lineEdit.text().strip()
@@ -692,17 +875,21 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
         if selected_row < 0:
             QtWidgets.QMessageBox.warning(self, "No Selection", "Please select a task to change its status.")
             return
+
         # Get the Task ID of the selected task
         task_id_item = self.tableWidget.item(selected_row, 0)  # Task_ID column
         if not task_id_item:
             QtWidgets.QMessageBox.warning(self, "Invalid Selection", "Please select a valid task.")
             return
         task_id = task_id_item.text()
+
         # Check which radio button is selected
         if self.status_button_group.checkedButton() is None:
             QtWidgets.QMessageBox.warning(self, "No Status Selected", "Please select a status (Completed, Pending, Dropped).")
             return
+
         status_button = self.status_button_group.checkedButton()
+
         # Determine status value based on the selected radio button text
         if status_button.text() == "Completed":
             status_value = 1  # Completed
@@ -710,6 +897,7 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
             status_value = 2  # Dropped
         else:
             status_value = 0  # Pending
+
         # Update the status in the database
         try:
             conn = connect_to_database()
@@ -730,6 +918,9 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
         finally:
             if conn:
                 conn.close()
+
+
+
 
 def main():
     app = QApplication(sys.argv)

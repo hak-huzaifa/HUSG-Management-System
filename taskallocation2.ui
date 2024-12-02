@@ -547,62 +547,62 @@ QTableWidget::item:hover {
     </column>
     <item row="0" column="0">
      <property name="text">
-      <string>100</string>
+      <string/>
      </property>
     </item>
     <item row="0" column="1">
      <property name="text">
-      <string>Finalizing Art for Posters</string>
+      <string/>
      </property>
     </item>
     <item row="0" column="2">
      <property name="text">
-      <string>Completed</string>
+      <string/>
      </property>
     </item>
     <item row="0" column="3">
      <property name="text">
-      <string>12/12/2023</string>
+      <string/>
      </property>
     </item>
     <item row="1" column="0">
      <property name="text">
-      <string>102</string>
+      <string/>
      </property>
     </item>
     <item row="1" column="1">
      <property name="text">
-      <string>FInalizing the Poster Layout</string>
+      <string/>
      </property>
     </item>
     <item row="1" column="2">
      <property name="text">
-      <string>Pending</string>
+      <string/>
      </property>
     </item>
     <item row="1" column="3">
      <property name="text">
-      <string>9/11/2023</string>
+      <string/>
      </property>
     </item>
     <item row="2" column="0">
      <property name="text">
-      <string>103</string>
+      <string/>
      </property>
     </item>
     <item row="2" column="1">
      <property name="text">
-      <string>Recruiting Members for Poster Design</string>
+      <string/>
      </property>
     </item>
     <item row="2" column="2">
      <property name="text">
-      <string>Dropped</string>
+      <string/>
      </property>
     </item>
     <item row="2" column="3">
      <property name="text">
-      <string>31/11/2023</string>
+      <string/>
      </property>
     </item>
    </widget>
@@ -845,7 +845,12 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
-      <string>Communications and Public Relations</string>
+      <string>Public Relations and Communications</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Executive Council</string>
      </property>
     </item>
     <item>
@@ -860,7 +865,7 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
-      <string>Rights, Advocacy and Ethos</string>
+      <string>Rights Advocacy &amp; Ethos</string>
      </property>
     </item>
    </widget>
