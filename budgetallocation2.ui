@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>861</width>
+    <width>838</width>
     <height>600</height>
    </rect>
   </property>
@@ -463,54 +463,11 @@ QPushButton#Back_pushButton:hover {
      <string>Back</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="ID_lineEdit">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>50</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLineEdit {
-    background-color: #40E0D0; /* Lighter, cool teal */
-    border: 1px solid #20B2AA; /* Border color to match hover */
-    color: black; /* Text color */
-    padding: 10px;
-    font-size: 16px;
-    font-family: &quot;Roboto&quot;; /* Font family */
-    border-radius: 12px;
-}
-
-QLineEdit:focus {
-    border: 1px solid #20B2AA; /* Darker, cool teal for focus border */
-    background-color: #E0FFFF; /* Lighter background on focus for contrast */
-}
-</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>50</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Recipient HU ID:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>80</y>
+      <x>40</x>
+      <y>100</y>
       <width>71</width>
       <height>21</height>
      </rect>
@@ -522,10 +479,10 @@ QLineEdit:focus {
    <widget class="QComboBox" name="deptComboBox">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>80</y>
-      <width>151</width>
-      <height>22</height>
+      <x>120</x>
+      <y>100</y>
+      <width>131</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -575,8 +532,8 @@ QComboBox:focus {
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>110</y>
+      <x>40</x>
+      <y>150</y>
       <width>71</width>
       <height>21</height>
      </rect>
@@ -588,10 +545,10 @@ QComboBox:focus {
    <widget class="QLineEdit" name="ID_lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>110</y>
-      <width>151</width>
-      <height>21</height>
+      <x>120</x>
+      <y>140</y>
+      <width>171</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -618,10 +575,10 @@ QLineEdit:focus {
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>190</y>
-      <width>361</width>
-      <height>201</height>
+      <x>70</x>
+      <y>260</y>
+      <width>281</width>
+      <height>211</height>
      </rect>
     </property>
     <property name="font">
@@ -677,19 +634,14 @@ QTableWidget::item:hover {
     <attribute name="verticalHeaderDefaultSectionSize">
      <number>24</number>
     </attribute>
-    <row/>
-    <row/>
-    <row/>
-    <column>
+    <row>
      <property name="text">
-      <string>Department head</string>
+      <string>1</string>
      </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI Light</family>
-      </font>
-     </property>
-    </column>
+    </row>
+    <row/>
+    <row/>
+    <row/>
     <column>
      <property name="text">
       <string>Department </string>
@@ -712,45 +664,40 @@ QTableWidget::item:hover {
     </column>
     <item row="0" column="0">
      <property name="text">
-      <string>Alishba</string>
+      <string>Food and Hygiene</string>
      </property>
     </item>
     <item row="0" column="1">
      <property name="text">
-      <string>Photography</string>
-     </property>
-    </item>
-    <item row="0" column="2">
-     <property name="text">
-      <string>2000</string>
+      <string>18000</string>
      </property>
     </item>
     <item row="1" column="0">
      <property name="text">
-      <string>Huzaifa</string>
+      <string>Executive Council</string>
      </property>
     </item>
     <item row="1" column="1">
      <property name="text">
-      <string>Logistics</string>
-     </property>
-    </item>
-    <item row="1" column="2">
-     <property name="text">
-      <string>56,000</string>
+      <string>2000</string>
      </property>
     </item>
     <item row="2" column="0">
      <property name="text">
-      <string>Aamaina</string>
+      <string>Events</string>
      </property>
     </item>
     <item row="2" column="1">
      <property name="text">
-      <string>Marketing</string>
+      <string>56,000</string>
      </property>
     </item>
-    <item row="2" column="2">
+    <item row="3" column="0">
+     <property name="text">
+      <string>Public Relations and Communications</string>
+     </property>
+    </item>
+    <item row="3" column="1">
      <property name="text">
       <string>17,000</string>
      </property>
@@ -759,8 +706,8 @@ QTableWidget::item:hover {
    <widget class="QLCDNumber" name="lcdNumber">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>70</y>
+      <x>490</x>
+      <y>110</y>
       <width>201</width>
       <height>21</height>
      </rect>
@@ -785,7 +732,7 @@ QTableWidget::item:hover {
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>170</y>
+      <y>240</y>
       <width>281</width>
       <height>21</height>
      </rect>
@@ -797,207 +744,21 @@ QTableWidget::item:hover {
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>70</y>
+      <x>280</x>
+      <y>100</y>
       <width>231</width>
-      <height>21</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Balance:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_11">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>110</y>
-      <width>71</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Add Balance:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="ID_lineEdit_3">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>110</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLineEdit {
-    background-color: #40E0D0; /* Lighter, cool teal */
-    border: 1px solid #20B2AA; /* Border color to match hover */
-    color: black; /* Text color */
-    padding: 10px;
-    font-size: 16px;
-    font-family: &quot;Roboto&quot;; /* Font family */
-    border-radius: 12px;
-}
-
-QLineEdit:focus {
-    border: 1px solid #20B2AA; /* Darker, cool teal for focus border */
-    background-color: #E0FFFF; /* Lighter background on focus for contrast */
-}
-</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="add_pushButton">
-    <property name="geometry">
-     <rect>
-      <x>590</x>
-      <y>110</y>
-      <width>121</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton#assign_pushButton {
-    background-color: #FF6347; /* Tomato red */
-    border: none;
-    color: white; /* Text color */
-    padding: 2px; /* Smaller padding */
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 12px; /* Smaller font */
-    font-family: &quot;Roboto&quot;; /* Font family */
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px; /* Smaller border radius */
-}
-
-QPushButton#assign_pushButton:hover {
-    background-color: #FF4500; /* Darker red (OrangeRed) */
-}
-</string>
-    </property>
-    <property name="text">
-     <string>Save</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="ID_lineEdit_4">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>230</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLineEdit {
-    background-color: #40E0D0; /* Lighter, cool teal */
-    border: 1px solid #20B2AA; /* Border color to match hover */
-    color: black; /* Text color */
-    padding: 10px;
-    font-size: 16px;
-    font-family: &quot;Roboto&quot;; /* Font family */
-    border-radius: 12px;
-}
-
-QLineEdit:focus {
-    border: 1px solid #20B2AA; /* Darker, cool teal for focus border */
-    background-color: #E0FFFF; /* Lighter background on focus for contrast */
-}
-</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>400</x>
-      <y>230</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Recipient HU ID:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>260</y>
-      <width>71</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Cabinet:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="deptComboBox_2">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>260</y>
-      <width>151</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QComboBox {
-    background-color: #40E0D0; /* Lighter, cool teal */
-    border: 1px solid #20B2AA; /* Border color to match hover */
-    color: black; /* Text color */
-    padding: 2px;
-    font-size: 8px;
-    font-family: &quot;Roboto&quot;; /* Font family */
-    border-radius: 12px;
-}
-
-
-QComboBox:focus {
-    border: 1px solid #20B2AA; /* Darker, cool teal for focus border */
-    background-color: #E0FFFF; /* Lighter background on focus for contrast */
-}
-</string>
-    </property>
-    <item>
-     <property name="text">
-      <string notr="true">Academic Affairs</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Communications and Public Relations</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Events </string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Food and Hygiene</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Rights, Advocacy and Ethos</string>
-     </property>
-    </item>
-   </widget>
    <widget class="QPushButton" name="allocate_pushButton">
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>140</y>
+      <y>210</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -1027,90 +788,13 @@ QPushButton#allocate_pushButton:hover {
      <string>Allocate</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="ID_lineEdit_5">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>290</y>
-      <width>151</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLineEdit {
-    background-color: #40E0D0; /* Lighter, cool teal */
-    border: 1px solid #20B2AA; /* Border color to match hover */
-    color: black; /* Text color */
-    padding: 10px;
-    font-size: 16px;
-    font-family: &quot;Roboto&quot;; /* Font family */
-    border-radius: 12px;
-}
-
-QLineEdit:focus {
-    border: 1px solid #20B2AA; /* Darker, cool teal for focus border */
-    background-color: #E0FFFF; /* Lighter background on focus for contrast */
-}
-</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>290</y>
-      <width>91</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;Amount:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="edit_pushButton">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>330</y>
-      <width>121</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton#edit_pushButton {
-    background-color: #FF6347; /* Tomato red */
-    border: none;
-    color: white; /* Text color */
-    padding: 2px; /* Smaller padding */
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 12px; /* Smaller font */
-    font-family: &quot;Roboto&quot;; /* Font family */
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px; /* Smaller border radius */
-}
-
-QPushButton#edit_pushButton:hover {
-    background-color: #FF4500; /* Darker red (OrangeRed) */
-}
-</string>
-    </property>
-    <property name="text">
-     <string>Edit</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_12">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>220</x>
       <y>0</y>
-      <width>251</width>
-      <height>41</height>
+      <width>411</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -1133,7 +817,7 @@ QPushButton#edit_pushButton:hover {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>861</width>
+     <width>838</width>
      <height>18</height>
     </rect>
    </property>
