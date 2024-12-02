@@ -510,7 +510,7 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
-      <string>Communications and Public Relations</string>
+      <string>Public Relations and Communications</string>
      </property>
     </item>
     <item>
@@ -520,12 +520,17 @@ QComboBox:focus {
     </item>
     <item>
      <property name="text">
+      <string>Executive Council</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>Food and Hygiene</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Rights, Advocacy and Ethos</string>
+      <string>Rights Advocacy &amp; Ethos</string>
      </property>
     </item>
    </widget>
