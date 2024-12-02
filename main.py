@@ -7,7 +7,7 @@ import pyodbc
 def connect_to_database():
     return pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
                           "SERVER=ALISHBA-ZAIDI;"
-                          "DATABASE=projectsample;"
+                          "DATABASE=HUSG;"
                           "Trusted_Connection=yes;")
 
 class LoginWindow(QtWidgets.QMainWindow):
@@ -157,10 +157,14 @@ class RegistrationWindow(QtWidgets.QMainWindow):
         if not all([hu_id, password, confirm_password, email, cabinet_name, contact_number, designation]):
             QtWidgets.QMessageBox.warning(self, "Input Error", "Please fill in all fields!")
             return
-
+        
         if password != confirm_password:
             QtWidgets.QMessageBox.warning(self, "Input Error", "Passwords do not match!")
             return
+        if not contact_number.isdigit():
+            QtWidgets.QMessageBox.warning(self, "Invalid Contact Number", "Please add a valid Contact Number (only integers).")
+            return
+
         cabinet_mapping = {
             "Executive Council": 1,
             "Rights Advocacy & Ethos": 2,
@@ -918,9 +922,6 @@ class TaskAllocationWindow(QtWidgets.QMainWindow):
         finally:
             if conn:
                 conn.close()
-
-
-
 
 def main():
     app = QApplication(sys.argv)
