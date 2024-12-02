@@ -819,37 +819,16 @@ QGroupBox#Designation_groupBox:title {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QRadioButton#EC_radioButton {
-    color: white; /* Text color */
-    font-size: 8px; /* Font size */
-    font-family: &quot;Roboto&quot;; /* Font family */
+      <string notr="true">QRadioButton{
+	color: #FFF;
+	background-color: rgb(30, 30, 40);
+	border-radius: 5px;
 }
 
-QRadioButton#EC_radioButton::indicator {
-    width: 20px; /* Width of the radio button */
-    height: 20px; /* Height of the radio button */
-}
+QRadioButton:hover{
+	background-color: rgb(50, 50, 67);
 
-QRadioButton#EC_radioButton::indicator:checked {
-    background-color: #40E0D0; /* Lighter teal for the checked background */
-    border: 2px solid #20B2AA; /* Darker teal border for the checked state */
-}
-
-QRadioButton#EC_radioButton::indicator:unchecked {
-    background-color: #FFFFFF; /* White background for the unchecked state */
-    border: 2px solid #20B2AA; /* Darker teal border for the unchecked state */
-}
-
-QRadioButton#EC_radioButton::indicator:checked::after {
-    content: &quot;&quot;;
-    width: 10px; /* Width of the inner dot */
-    height: 10px; /* Height of the inner dot */
-    background-color: #20B2AA; /* Darker teal for the inner dot */
-    border-radius: 50%; /* Round shape for the inner dot */
-    display: block;
-    margin: 5px; /* Center the dot within the radio button */
-}
-</string>
+}</string>
      </property>
      <property name="text">
       <string>Excecutive Council</string>
@@ -865,37 +844,16 @@ QRadioButton#EC_radioButton::indicator:checked::after {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QRadioButton#Chair_radioButton {
-    color: white; /* White text color */
-    font-size: 8px; /* Font size */
-    font-family: &quot;Roboto&quot;; /* Font family */
+      <string notr="true">QRadioButton{
+	color: #FFF;
+	background-color: rgb(30, 30, 40);
+	border-radius: 5px;
 }
 
-QRadioButton#Chair_radioButton::indicator {
-    width: 20px; /* Width of the radio button */
-    height: 20px; /* Height of the radio button */
-}
+QRadioButton:hover{
+	background-color: rgb(50, 50, 67);
 
-QRadioButton#Chair_radioButton::indicator:checked {
-    background-color: #40E0D0; /* Lighter teal for the checked background */
-    border: 2px solid #20B2AA; /* Darker teal border for the checked state */
-}
-
-QRadioButton#Chair_radioButton::indicator:unchecked {
-    background-color: #FFFFFF; /* White background for the unchecked state */
-    border: 2px solid #20B2AA; /* Darker teal border for the unchecked state */
-}
-
-QRadioButton#Chair_radioButton::indicator:checked::after {
-    content: &quot;&quot;;
-    width: 10px; /* Width of the inner dot */
-    height: 10px; /* Height of the inner dot */
-    background-color: #20B2AA; /* Darker teal for the inner dot */
-    border-radius: 50%; /* Round shape for the inner dot */
-    display: block;
-    margin: 5px; /* Center the dot within the radio button */
-}
-</string>
+}</string>
      </property>
      <property name="text">
       <string>Cabinet Chair</string>
@@ -911,37 +869,16 @@ QRadioButton#Chair_radioButton::indicator:checked::after {
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QRadioButton#Mem_radioButton {
-    color: white; /* White text color */
-    font-size: 8px; /* Font size */
-    font-family: &quot;Roboto&quot;; /* Font family */
+      <string notr="true">QRadioButton{
+	color: #FFF;
+	background-color: rgb(30, 30, 40);
+	border-radius: 5px;
 }
 
-QRadioButton#Mem_radioButton::indicator {
-    width: 20px; /* Width of the radio button */
-    height: 20px; /* Height of the radio button */
-}
+QRadioButton:hover{
+	background-color: rgb(50, 50, 67);
 
-QRadioButton#Mem_radioButton::indicator:checked {
-    background-color: #40E0D0; /* Lighter teal for the checked background */
-    border: 2px solid #20B2AA; /* Darker teal border for the checked state */
-}
-
-QRadioButton#Mem_radioButton::indicator:unchecked {
-    background-color: #FFFFFF; /* White background for the unchecked state */
-    border: 2px solid #20B2AA; /* Darker teal border for the unchecked state */
-}
-
-QRadioButton#Mem_radioButton::indicator:checked::after {
-    content: &quot;&quot;;
-    width: 10px; /* Width of the inner dot */
-    height: 10px; /* Height of the inner dot */
-    background-color: #20B2AA; /* Darker teal for the inner dot */
-    border-radius: 50%; /* Round shape for the inner dot */
-    display: block;
-    margin: 5px; /* Center the dot within the radio button */
-}
-</string>
+}</string>
      </property>
      <property name="text">
       <string>Member</string>
